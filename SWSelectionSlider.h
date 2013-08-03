@@ -25,4 +25,13 @@
 
 @interface SWSelectionSlider : UIView
 
+@property (weak, nonatomic)     id <SWSelectionSliderDataSource>    dataSource;
+@property (weak, nonatomic)     id <SWSelectionSliderDelegate>      delegate;
+
+@property (nonatomic)           NSInteger                           selectedIndex;
+
+@property (strong, nonatomic)   UILabel                             *selectionLabel;
+
+@property (strong, nonatomic)   UIView                              *sliderView;
+
 @end
