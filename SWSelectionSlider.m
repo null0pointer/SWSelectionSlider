@@ -33,10 +33,18 @@
     frame.size.height = self.frame.size.height * [self.dataSource numberOfSelectionsForSlider:self];
     frame.origin.y = globalPoint.y - localPoint.y - (self.frame.size.height * self.selectedIndex);
     self.sliderView.frame = frame;
+    
+    [keyWindow addSubview:self.sliderView];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+    UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
+    CGPoint localPoint = [[touches anyObject] locationInView:self];
+    CGPoint globalPoint = [[touches anyObject] locationInView:keyWindow];
     
+    CGRect frame = self.sliderView.frame;
+    frame.origin.y = globalPoint.y - localPoint.y - (self.frame.size.height * self.selectedIndex);
+    self.sliderView.frame = frame;
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
