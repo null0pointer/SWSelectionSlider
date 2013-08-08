@@ -23,7 +23,7 @@
 
 @end
 
-@interface SWSelectionSlider : UIView
+@interface SWSelectionSlider : UIView <UIScrollViewDelegate>
 
 @property (weak, nonatomic)     id <SWSelectionSliderDataSource>    dataSource;
 @property (weak, nonatomic)     id <SWSelectionSliderDelegate>      delegate;
@@ -33,5 +33,6 @@
 @property (strong, nonatomic)   UILabel                             *selectionLabel;
 
 @property (strong, nonatomic)   UIView                              *sliderView;
+@property (strong, nonatomic)   UIScrollView                        *sliderScrollView;
 
 @end

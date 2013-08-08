@@ -18,6 +18,9 @@
     if (self) {
         self.selectionLabel = [[UILabel alloc] initWithFrame:self.bounds];
         [self addSubview:self.selectionLabel];
+        
+        self.sliderScrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
+        self.sliderScrollView.backgroundColor = [UIColor clearColor];
     }
     return self;
 }
@@ -25,6 +28,9 @@
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     self.sliderView = [[UIView alloc] init];
     self.sliderView.backgroundColor = [UIColor redColor];
+    
+    self.sliderScrollView.contentSize = CGSizeMake(self.frame.size.width, self.frame.size.height * [self.dataSource numberOfSelectionsForSlider:self]);
+    self.sliderScrollView.contentOffset = CGPointMake(0, self.frame.size.height * self.selectedIndex);
     
     UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
     originalTouchPoint = [[touches anyObject] locationInView:self];
@@ -63,6 +69,12 @@
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+    
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     
 }
 
