@@ -43,9 +43,18 @@
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
     CGPoint globalPoint = [[touches anyObject] locationInView:keyWindow];
+    CGPoint localPoint = [[touches anyObject] locationInView:self];
+    CGPoint originInKeyWindow = CGPointMake(globalPoint.x - localPoint.x, globalPoint.y - localPoint.y);
     
     CGRect frame = self.sliderView.frame;
     frame.origin.y = globalPoint.y - originalTouchPoint.y - (self.frame.size.height * self.selectedIndex);
+    
+    if (frame.origin.y > originInKeyWindow.y) {
+        frame.origin.y = originInKeyWindow.y;
+    } else if (frame.origin.y < ((originInKeyWindow.y + self.frame.size.height) - self.sliderView.frame.size.height)) {
+        frame.origin.y = ((originInKeyWindow.y + self.frame.size.height) - self.sliderView.frame.size.height);
+    }
+    
     self.sliderView.frame = frame;
 }
 
