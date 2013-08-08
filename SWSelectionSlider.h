@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SWSelectionSlidingView.h"
 
 @class SWSelectionSlider;
 
@@ -23,7 +24,7 @@
 
 @end
 
-@interface SWSelectionSlider : UIView <UIScrollViewDelegate>
+@interface SWSelectionSlider : UIView <UIScrollViewDelegate, SWSelectionSlidingViewDelegate>
 
 @property (weak, nonatomic)     id <SWSelectionSliderDataSource>    dataSource;
 @property (weak, nonatomic)     id <SWSelectionSliderDelegate>      delegate;
@@ -32,7 +33,7 @@
 
 @property (strong, nonatomic)   UILabel                             *selectionLabel;
 
-@property (strong, nonatomic)   UIView                              *sliderView;
+@property (strong, nonatomic)   SWSelectionSlidingView              *sliderView;
 @property (strong, nonatomic)   UIScrollView                        *sliderScrollView;
 
 @end
