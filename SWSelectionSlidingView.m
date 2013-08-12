@@ -7,6 +7,7 @@
 //
 
 #import "SWSelectionSlidingView.h"
+#import <QuartzCore/QuartzCore.h>
 
 @implementation SWSelectionSlidingView
 
@@ -27,6 +28,10 @@
 - (void)present {
     self.alpha = 0.0;
     [[[UIApplication sharedApplication] keyWindow] addSubview:self];
+    
+    self.layer.shadowOffset = CGSizeMake(0, 0);
+    self.layer.shadowRadius = 5;
+    self.layer.shadowOpacity = 0.5;
     
     [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
         self.alpha = 1.0;
