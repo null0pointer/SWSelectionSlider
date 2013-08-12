@@ -19,7 +19,7 @@
     
     for (int i = 0; i < options.count; i++) {
         labelFrame.origin.y = i * labelFrame.size.height;
-        UILabel *label = [[UILabel alloc] initWithFrame:labelFrame];
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectInset(labelFrame, 5, 5)];
         label.text = [options objectAtIndex:i];
         [self addSubview:label];
     }
@@ -33,13 +33,13 @@
     self.layer.shadowRadius = 5;
     self.layer.shadowOpacity = 0.5;
     
-    [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+    [UIView animateWithDuration:0.15 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
         self.alpha = 1.0;
     } completion:nil];
 }
 
 - (void)dismiss {
-    [UIView animateWithDuration:0.25 delay:0.0 options:0 animations:^{
+    [UIView animateWithDuration:0.15 delay:0.0 options:0 animations:^{
         self.alpha = 0.0;
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
