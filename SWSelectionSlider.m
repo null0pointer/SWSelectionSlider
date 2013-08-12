@@ -9,8 +9,9 @@
 #import "SWSelectionSlider.h"
 
 @implementation SWSelectionSlider {
-    CGPoint originalTouchPoint;
     CGPoint originInKeyWindow;
+    
+    BOOL isShowingScrollView;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -21,92 +22,73 @@
         
         self.sliderScrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
         self.sliderScrollView.backgroundColor = [UIColor clearColor];
+        [self.sliderScrollView setShowsVerticalScrollIndicator:NO];
         self.sliderScrollView.delegate = self;
         [self addSubview:self.sliderScrollView];
         
         self.selectionLabel = [[UILabel alloc] initWithFrame:self.bounds];
         self.selectionLabel.backgroundColor = [UIColor clearColor];
         [self addSubview:self.selectionLabel];
+        
+        UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleScrollViewTap:)];
+        [recognizer setNumberOfTapsRequired:1];
+        [recognizer setNumberOfTouchesRequired:1];
+        [self.sliderScrollView addGestureRecognizer:recognizer];
     }
     return self;
 }
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
-    originalTouchPoint = [[touches anyObject] locationInView:self];
-    CGPoint globalPoint = [[touches anyObject] locationInView:keyWindow];
-    originInKeyWindow = CGPointMake(globalPoint.x - originalTouchPoint.x, globalPoint.y - originalTouchPoint.y);
-    
-    CGRect frame;
-    frame.origin.x = globalPoint.x - originalTouchPoint.x;
-    frame.size.width = self.frame.size.width;
-    frame.size.height = self.frame.size.height * [self.dataSource numberOfSelectionsForSlider:self];
-    frame.origin.y = globalPoint.y - originalTouchPoint.y - (self.frame.size.height * self.selectedIndex);
-    
-    self.sliderView = [[SWSelectionSlidingView alloc] initWithFrame:frame];
-    self.sliderView.delegate = self;
-    self.sliderView.backgroundColor = [UIColor redColor]; // DEBUG
-    
-    self.sliderScrollView.contentSize = CGSizeMake(self.frame.size.width, self.frame.size.height * [self.dataSource numberOfSelectionsForSlider:self]);
-    self.sliderScrollView.contentOffset = CGPointMake(0, self.frame.size.height * self.selectedIndex);
-    
-    [self.sliderView present];
-    
-    NSLog(@"TOUCHES BEGAN");
-    [self.sliderScrollView touchesBegan:touches withEvent:event];
+- (void)handleScrollViewTap:(UITapGestureRecognizer *)recognizer {
+    if (isShowingScrollView) {
+        
+    } else {
+        UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
+        CGRect globalFrame = [self convertRect:self.bounds toView:keyWindow];
+        originInKeyWindow = CGPointMake(globalFrame.origin.x, globalFrame.origin.y);	
+        
+        CGRect frame;
+        frame.origin.x = originInKeyWindow.x;
+        frame.size.width = self.frame.size.width;
+        frame.size.height = self.frame.size.height * [self.dataSource numberOfSelectionsForSlider:self];
+        frame.origin.y = originInKeyWindow.y - (self.frame.size.height * self.selectedIndex);
+        
+        self.sliderView = [[SWSelectionSlidingView alloc] initWithFrame:frame];
+        self.sliderView.scrollView = self.sliderScrollView;
+        self.sliderView.backgroundColor = [UIColor redColor]; // DEBUG
+        
+        self.sliderScrollView.contentSize = self.sliderView.frame.size;
+        self.sliderScrollView.contentOffset = CGPointMake(0, self.frame.size.height * self.selectedIndex);
+        
+        [self.sliderView present];
+        
+        isShowingScrollView = YES;
+    }
 }
 
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-//    UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
-//    CGPoint globalPoint = [[touches anyObject] locationInView:keyWindow];
-//    
-//    CGRect frame = self.sliderView.frame;
-//    frame.origin.y = globalPoint.y - originalTouchPoint.y - (self.frame.size.height * self.selectedIndex);
-//    
-//    if (frame.origin.y > originInKeyWindow.y) {
-//        frame.origin.y = originInKeyWindow.y;
-//    } else if (frame.origin.y < ((originInKeyWindow.y + self.frame.size.height) - self.sliderView.frame.size.height)) {
-//        frame.origin.y = ((originInKeyWindow.y + self.frame.size.height) - self.sliderView.frame.size.height);
-//    }
-//    
-//    self.sliderView.frame = frame;
-    
-    [self.sliderScrollView touchesMoved:touches withEvent:event];
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)dismissSliderView {
     [self.sliderView dismiss];
-    
-    [self.sliderScrollView touchesEnded:touches withEvent:event];
-}
-
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-    [self.sliderScrollView touchesCancelled:touches withEvent:event];
+    isShowingScrollView = NO;
 }
 
 #pragma mark - UIScrollViewDelegate
 
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    if (!isShowingScrollView) {
+        [self handleScrollViewTap:nil];
+    }
+}
+
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    NSLog(@"HELLO");
-    [self.sliderView setOriginY:(originInKeyWindow.y + scrollView.contentOffset.y)];
+    if (self.sliderDismissalTimer) {
+        [self.sliderDismissalTimer invalidate];
+        self.sliderDismissalTimer = nil;
+    }
+    
+    [self.sliderView setOriginY:(originInKeyWindow.y - scrollView.contentOffset.y)];
 }
 
-#pragma mark - SWSelectionSlidingViewDelegate
-
-- (void)slidingView:(SWSelectionSlidingView *)slidingView touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    [self touchesBegan:touches withEvent:event];
-}
-
-- (void)slidingView:(SWSelectionSlidingView *)slidingView touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
-    [self touchesMoved:touches withEvent:event];
-}
-
-- (void)slidingView:(SWSelectionSlidingView *)slidingView touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    [self touchesEnded:touches withEvent:event];
-}
-
-- (void)slidingView:(SWSelectionSlidingView *)slidingView touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-    [self touchesCancelled:touches withEvent:event];
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    self.sliderDismissalTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(dismissSliderView) userInfo:nil repeats:NO];
 }
 
 @end

@@ -24,7 +24,7 @@
 
 @end
 
-@interface SWSelectionSlider : UIView <UIScrollViewDelegate, SWSelectionSlidingViewDelegate>
+@interface SWSelectionSlider : UIView <UIScrollViewDelegate>
 
 @property (weak, nonatomic)     id <SWSelectionSliderDataSource>    dataSource;
 @property (weak, nonatomic)     id <SWSelectionSliderDelegate>      delegate;
@@ -32,6 +32,8 @@
 @property (nonatomic)           NSInteger                           selectedIndex;
 
 @property (strong, nonatomic)   UILabel                             *selectionLabel;
+
+@property (strong, nonatomic)   NSTimer                             *sliderDismissalTimer;
 
 @property (strong, nonatomic)   SWSelectionSlidingView              *sliderView;
 @property (strong, nonatomic)   UIScrollView                        *sliderScrollView;

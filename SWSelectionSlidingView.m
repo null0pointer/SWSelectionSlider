@@ -33,7 +33,7 @@
 }
 
 - (void)dismiss {
-    [UIView animateWithDuration:0.25 delay:0.0 options:nil animations:^{
+    [UIView animateWithDuration:0.25 delay:0.0 options:0 animations:^{
         self.alpha = 0.0;
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
@@ -46,20 +46,13 @@
     self.frame = frame;
 }
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    [self.delegate slidingView:self touchesBegan:touches withEvent:event];
-}
-
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    [self.delegate slidingView:self touchesMoved:touches withEvent:event];
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    [self.delegate slidingView:self touchesEnded:touches withEvent:event];
-}
-
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-    [self.delegate slidingView:self touchesCancelled:touches withEvent:event];
+- (UIView*)hitTest:(CGPoint)point withEvent:(UIEvent*)event
+{
+    if (CGRectContainsPoint(self.bounds, point)) {
+        return self.scrollView;
+    }
+    
+    return [super hitTest: point withEvent: event];
 }
 
 @end
