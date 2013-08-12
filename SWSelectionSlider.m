@@ -54,7 +54,14 @@
         
         self.sliderView = [[SWSelectionSlidingView alloc] initWithFrame:frame];
         self.sliderView.scrollView = self.sliderScrollView;
-        self.sliderView.backgroundColor = [UIColor redColor]; // DEBUG
+        
+        self.sliderView.backgroundColor = [UIColor redColor];
+        
+        NSMutableArray *optionsArray = [NSMutableArray arrayWithCapacity:[self.dataSource numberOfSelectionsForSlider:self]];
+        for (int i = 0; i < [self.dataSource numberOfSelectionsForSlider:self]; i++) {
+            [optionsArray addObject:[self.dataSource slider:self titleForSelectionAtIndex:i]];
+        }
+        [self.sliderView layoutOptions:optionsArray];
         
         self.sliderScrollView.contentSize = self.sliderView.frame.size;
         self.sliderScrollView.contentOffset = CGPointMake(0, self.frame.size.height * self.selectedIndex);

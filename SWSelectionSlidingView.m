@@ -11,7 +11,17 @@
 @implementation SWSelectionSlidingView
 
 - (void)layoutOptions:(NSArray *)options {
+    CGRect labelFrame;
+    labelFrame.origin.x = 0;
+    labelFrame.size.width = self.frame.size.width;
+    labelFrame.size.height = self.frame.size.height / options.count;
     
+    for (int i = 0; i < options.count; i++) {
+        labelFrame.origin.y = i * labelFrame.size.height;
+        UILabel *label = [[UILabel alloc] initWithFrame:labelFrame];
+        label.text = [options objectAtIndex:i];
+        [self addSubview:label];
+    }
 }
 
 - (void)present {
