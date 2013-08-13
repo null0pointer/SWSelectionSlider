@@ -77,6 +77,13 @@
     isShowingScrollView = NO;
 }
 
+- (CGFloat)roundContentOffset:(CGFloat)offset {
+    offset = offset / self.frame.size.height;
+    offset = roundf(offset);
+    offset = offset * self.frame.size.height;
+    return offset;
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
@@ -95,6 +102,17 @@
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    CGFloat offset = scrollView.contentOffset.y;
+    CGFloat newOffset = [self roundContentOffset:offset];
+    
+    if (offset != newOffset) {
+        [self.sliderScrollView setContentOffset:CGPointMake(scrollView.contentOffset.x, newOffset) animated:YES];
+    }
+    
+    self.sliderDismissalTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(dismissSliderView) userInfo:nil repeats:NO];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
     self.sliderDismissalTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(dismissSliderView) userInfo:nil repeats:NO];
 }
 
